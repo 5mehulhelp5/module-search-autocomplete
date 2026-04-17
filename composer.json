@@ -2,7 +2,7 @@
     "name": "mage2kishan/module-search-autocomplete",
     "description": "Engine-agnostic, bot-hardened, cached search autocomplete for Magento 2 and Hyva. Searches products, categories and CMS pages via the configured Magento search engine (Elasticsearch 7 / 8 / OpenSearch / MySQL fallback). Includes 9 layers of bot protection, dynamic catalog-derived synonym matching, dedicated cache type, popular and recent searches, full keyboard navigation and accessible markup. Works on stock Luma and Hyva theme out of the box.",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "proprietary",
     "keywords": [
         "magento2",
