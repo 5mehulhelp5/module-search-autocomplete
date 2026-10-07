@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+    <type name="panth_search_autocomplete"
+          translate="label,description"
+          instance="Panth\SearchAutocomplete\Model\Cache\Type">
+        <label>Panth Search Autocomplete</label>
+        <description>Cached autocomplete result sets per (store, customer group, query). Auto-invalidated on catalog / CMS edits.</description>
+    </type>
+</config>

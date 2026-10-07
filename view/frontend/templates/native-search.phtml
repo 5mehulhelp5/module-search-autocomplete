@@ -1,0 +1,10 @@
+<?php
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ */
+$vm = $block->getData('panth_search_box');
+if ($vm && $vm->isEnabled()) {
+    return;
+}
+?>
+<?= /* @noEscape */ $block->fetchView($block->getTemplateFile('Magento_Search::form.mini.phtml')) ?>

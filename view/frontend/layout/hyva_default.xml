@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!--
+    Hyva-specific layout override.
+
+    Hyva renders its native search box as the child block "header-search"
+    inside the parent template `header.phtml`, which wraps it in:
+
+        <div id="search-content" x-show="searchOpen" x-cloak>
+            <?= $block->getChildHtml('header-search'); ?>
+        </div>
+
+    The Alpine state `searchOpen` is `false` by default and toggles to
+    `true` when the user clicks the search-icon button (`#menu-search-icon`).
+    That gives us the EXACT click-icon -> popup-overlay UX the merchant
+    wants - we just need to render OUR template inside the existing
+    `header-search` slot. We use `<referenceBlock>` (NOT remove + re-add)
+    so the slot stays present and the parent's getChildHtml() call still
+    resolves.
+
+    The standalone Luma fallback block from default.xml is removed so
+    we never render two parallel search boxes on a Hyva page.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="panth.searchautocomplete.luma" remove="true"/>
+        <referenceBlock name="top.search" remove="true"/>
+
+        <referenceBlock name="header-search" template="Panth_SearchAutocomplete::hyva/searchbox.phtml">
+            <arguments>
+                <argument name="view_model" xsi:type="object">Panth\SearchAutocomplete\ViewModel\SearchBox</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

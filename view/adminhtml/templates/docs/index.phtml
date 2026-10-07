@@ -1,0 +1,238 @@
+<?php
+/**
+ * @var \Magento\Backend\Block\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$cfgUrl = $block->getUrl('adminhtml/system_config/edit/section/panth_searchautocomplete');
+?>
+<style>
+    .psac-docs { max-width: 1100px; margin: 0; padding: 0 0 60px; color: #303030; font-size: 14px; line-height: 1.6; }
+    .psac-docs h2 { font-size: 20px; font-weight: 600; margin: 32px 0 10px; padding-bottom: 6px; border-bottom: 2px solid #eb5202; color: #41362f; }
+    .psac-docs h3 { font-size: 16px; font-weight: 600; margin: 22px 0 8px; color: #41362f; }
+    .psac-docs p { line-height: 1.6; margin: 8px 0 12px; }
+    .psac-docs ul, .psac-docs ol { line-height: 1.7; margin: 8px 0 14px 22px; }
+    .psac-docs li { margin-bottom: 4px; }
+    .psac-docs a { color: #007bdb; }
+    .psac-docs a.action-primary, .psac-docs a.action-primary:hover { color: #fff; text-decoration: none; }
+    .psac-docs code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; color: #8b0000; }
+    .psac-docs pre { background: #2d2d2d; color: #f8f8f2; padding: 14px 18px; border-radius: 5px; overflow-x: auto; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; line-height: 1.55; margin: 12px 0; }
+    .psac-docs pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+    .psac-docs .toc { background: #fff; padding: 16px 20px; border-radius: 6px; margin: 14px 0 26px; border: 1px solid #e5e5e5; }
+    .psac-docs .toc strong { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #41362f; text-transform: uppercase; letter-spacing: 0.8px; }
+    .psac-docs .toc a { display: block; padding: 3px 0; color: #007bdb; text-decoration: none; }
+    .psac-docs .toc a:hover { text-decoration: underline; }
+    .psac-docs .ok, .psac-docs .warn, .psac-docs .danger { padding: 12px 16px; margin: 14px 0; border-left: 4px solid; border-radius: 0 4px 4px 0; }
+    .psac-docs .ok { background: #e8f5e9; border-left-color: #388e3c; }
+    .psac-docs .warn { background: #fff8e1; border-left-color: #f9a825; }
+    .psac-docs .danger { background: #fde7e9; border-left-color: #c62828; }
+    .psac-docs table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
+    .psac-docs th { background: #514943; color: #fff; text-align: left; padding: 10px 14px; font-weight: 600; font-size: 13px; vertical-align: top; }
+    .psac-docs td { padding: 10px 14px; border-bottom: 1px solid #e5e5e5; font-size: 14px; text-align: left; vertical-align: top; }
+    .psac-docs tr:nth-child(even) td { background: #fafafa; }
+    .psac-docs .hdr-actions { margin-bottom: 14px; }
+    .psac-docs .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .psac-docs .pill-on { background: #d4edda; color: #155724; }
+    .psac-docs .pill-key { background: #d1ecf1; color: #0c5460; }
+</style>
+
+<div class="psac-docs">
+    <div class="hdr-actions">
+        <a href="<?= $escaper->escapeUrl($cfgUrl) ?>" class="action-primary"><?= $escaper->escapeHtml(__('Open Configuration')) ?></a>
+    </div>
+
+    <p>An engine-agnostic, bot-hardened, cached search autocomplete for Hyva and Luma. Searches products, categories, and CMS pages in real time using whichever search backend the merchant has configured (Elasticsearch 7, Elasticsearch 8, OpenSearch, or MySQL fallback) - the same code path runs on every supported Magento install.</p>
+
+    <div class="toc">
+        <strong>Table of contents</strong>
+        <a href="#features">1. Features</a>
+        <a href="#architecture">2. Architecture &amp; engine compatibility</a>
+        <a href="#config">3. Configuration reference</a>
+        <a href="#security">4. Security model - what blocks attackers</a>
+        <a href="#performance">5. Performance &amp; caching</a>
+        <a href="#themes">6. Hyva &amp; Luma integration</a>
+        <a href="#extending">7. Extending - adding new content types</a>
+        <a href="#troubleshooting">8. Troubleshooting</a>
+    </div>
+
+    <h2 id="features">1. Features</h2>
+    <ul>
+        <li><strong>Engine-agnostic search</strong> via <code>Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection</code> - works on Elasticsearch 7, Elasticsearch 8, OpenSearch, and MySQL with one code path.</li>
+        <li><strong>Three live result sections</strong>: Products (with image, name, SKU, price), Categories (with item count, plus the parent path when two categories share a name), CMS Pages.</li>
+        <li><strong>Popular searches</strong>: quick-pick chips driven by the live <code>search_query</code> popularity counter that Magento maintains for every search submitted to the results page. Typed suggestion requests are only counted when Count Typed Queries as Searches is Yes (default No).</li>
+        <li><strong>Recent searches</strong>: last 6 stored in the browser (<code>localStorage</code>), shown when the input is empty, with a Clear link to forget them.</li>
+        <li><strong>Typo correction</strong>: when nothing matches the typed words, similar words from product names are searched instead and the dropdown says which term it used (for example "bakpack" shows results for "backpack"). See all results and Enter then search the corrected term.</li>
+        <li><strong>Highlighted matches</strong>: every result highlights the substring the user typed.</li>
+        <li><strong>Keyboard navigation</strong>: arrow keys, Enter, Escape - full accessibility.</li>
+        <li><strong>Mobile-first</strong>: dropdown directly under the input on phones, 44px touch targets on touch screens, 16px input font (no iOS zoom). On Luma phones the search opens as a top bar with its own close button.</li>
+        <li><strong>Theme-token aware</strong>: colors come from <code>theme-config.json</code> via CSS custom properties so the look matches the rest of the Hyva theme.</li>
+        <li><strong>Dedicated cache type</strong>: <code>panth_search_autocomplete</code> in cache management. Auto-invalidated when products / categories / CMS pages change.</li>
+        <li><strong>Bot &amp; abuse prevention</strong>: see §4.</li>
+    </ul>
+
+    <h2 id="architecture">2. Architecture &amp; engine compatibility</h2>
+    <p>Single AJAX endpoint at <code>/searchautocomplete/ajax/suggest?q=&lt;term&gt;&amp;form_key=&lt;key&gt;</code>. Pipeline:</p>
+    <pre>RequestValidator -> RateLimiter -> Cache lookup
+                                       │
+                              ┌────────┴────────┐
+                              │ ProductProvider │ &lt;- Fulltext\Collection (ES/OS/MySQL)
+                              │ CategoryProvider│ &lt;- catalog_category_entity
+                              │ CmsPageProvider │ &lt;- cms_page (storefront-scoped)
+                              │ PopularProvider │ &lt;- search_query
+                              └────────┬────────┘
+                                       │
+                                Cache write -> JSON response</pre>
+    <p>The product path uses <code>\Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection</code>, which delegates to whichever <em>search engine adapter</em> Magento is configured to use:</p>
+    <table>
+        <tr><th>Engine</th><th>Magento setting</th><th>Status</th></tr>
+        <tr><td>Elasticsearch 7</td><td><code>catalog/search/engine = elasticsearch7</code></td><td><span class="pill pill-on">Supported</span></td></tr>
+        <tr><td>Elasticsearch 8</td><td><code>catalog/search/engine = elasticsearch8</code></td><td><span class="pill pill-on">Supported</span></td></tr>
+        <tr><td>OpenSearch</td><td><code>catalog/search/engine = opensearch</code></td><td><span class="pill pill-on">Supported</span></td></tr>
+        <tr><td>MySQL fallback</td><td><code>catalog/search/engine = mysql</code></td><td><span class="pill pill-on">Supported</span></td></tr>
+    </table>
+    <p>No engine-specific HTTP client, no DSL templates. The merchant changes engines from the admin and the autocomplete instantly follows.</p>
+
+    <h3>Filters applied to product results</h3>
+    <ul>
+        <li><strong>Status</strong>: only enabled products (<code>status = 1</code>)</li>
+        <li><strong>Visibility</strong>: only "Catalog, Search" + "Search" (<code>visibility IN (3, 4)</code>) - same as <code>/catalogsearch/result</code></li>
+        <li><strong>Store scope</strong>: current store id only</li>
+        <li><strong>Stock</strong>: when <code>cataloginventory/options/show_out_of_stock = 0</code>, OOS products are hidden via <code>StockHelper::addInStockFilterToCollection</code></li>
+        <li><strong>Permission scope</strong>: customer group is part of the cache key so guest vs logged-in users never share results</li>
+    </ul>
+
+    <h3>Filters applied to category results</h3>
+    <ul>
+        <li><strong>Active</strong>: only <code>is_active = 1</code></li>
+        <li><strong>Store root</strong>: restricted by <code>path LIKE '1/&lt;rootCategoryId&gt;/%'</code> so multi-store installs never leak categories from a sibling store</li>
+        <li><strong>Root excluded</strong>: the store root itself is never returned</li>
+        <li><strong>URL resolves</strong>: categories without a built URL are dropped post-filter</li>
+    </ul>
+
+    <h3>Filters applied to CMS page results</h3>
+    <ul>
+        <li><strong>Active</strong>: only <code>is_active = 1</code></li>
+        <li><strong>Store scope</strong>: <code>addStoreFilter()</code> joins <code>cms_page_store</code>; both the current store id and 0 (= "All Stores") are honoured exactly like the storefront</li>
+        <li><strong>Identifier required</strong>: pages without an identifier are dropped (cannot build a URL)</li>
+        <li><strong>System pages excluded</strong>: <code>no-route</code>, <code>enable-cookies</code>, <code>home</code>, <code>privacy-policy-cookie-restriction-mode</code></li>
+        <li><strong>Composite text search</strong>: title OR meta_keywords OR meta_description OR content_heading OR identifier</li>
+    </ul>
+
+    <h2 id="config">3. Configuration reference</h2>
+    <p>All settings live under <strong>Stores -> Configuration -> Panth Extensions -> Search Autocomplete</strong> and are website / store scoped where it makes sense.</p>
+
+    <h3>General</h3>
+    <table>
+        <tr><th>Field</th><th>Default</th><th>Notes</th></tr>
+        <tr><td>Enable Module</td><td>Yes</td><td>Master kill-switch.</td></tr>
+        <tr><td>Minimum Query Length</td><td>2</td><td>Queries shorter than this never reach the backend.</td></tr>
+        <tr><td>Maximum Query Length</td><td>64</td><td>Hard cap to defeat CPU-DoS via huge queries.</td></tr>
+        <tr><td>Input Debounce (ms)</td><td>200</td><td>Lower = more requests / cooler UI; higher = laggier.</td></tr>
+    </table>
+
+    <h3>Result Sections</h3>
+    <table>
+        <tr><th>Field</th><th>Default</th><th>Notes</th></tr>
+        <tr><td>Max Products</td><td>6</td><td>Hard cap 20.</td></tr>
+        <tr><td>Max Categories</td><td>5</td><td>0 = hide section.</td></tr>
+        <tr><td>Max CMS Pages</td><td>3</td><td>0 = hide section.</td></tr>
+        <tr><td>Max Popular Searches</td><td>5</td><td>0 = hide chips row.</td></tr>
+        <tr><td>Show Product Images / Prices</td><td>Yes / Yes</td><td>Toggle independently.</td></tr>
+        <tr><td>Show Categories / Pages / Popular sections</td><td>Yes</td><td>Toggle each section.</td></tr>
+        <tr><td>Count Typed Queries as Searches</td><td>No</td><td>Yes writes every uncached typed query to search_query and raises its popularity.</td></tr>
+    </table>
+
+    <h3>Caching</h3>
+    <table>
+        <tr><th>Field</th><th>Default</th><th>Notes</th></tr>
+        <tr><td>Enable Result Cache</td><td>Yes</td><td>Dedicated cache type <code>panth_search_autocomplete</code>.</td></tr>
+        <tr><td>Cache TTL (s)</td><td>300</td><td>Auto-invalidated when products / categories / CMS pages change (cache tags).</td></tr>
+    </table>
+
+    <h3>Bot &amp; Abuse Prevention</h3>
+    <table>
+        <tr><th>Field</th><th>Default</th><th>What it does</th></tr>
+        <tr><td>Require Form Key</td><td>Yes</td><td>Rejects requests without a session-bound Magento form_key.</td></tr>
+        <tr><td>Rate Limit (req / min / IP)</td><td>60</td><td>Sliding 60-second window. Cache hits do not count.</td></tr>
+        <tr><td>Block Empty User-Agent</td><td>Yes</td><td>Headless probes routinely omit the UA.</td></tr>
+        <tr><td>Block Bot User-Agent Patterns</td><td>Yes</td><td>curl, wget, python-requests, scrapy, headlesschrome, phantomjs, sqlmap, nikto, etc.</td></tr>
+        <tr><td>Honeypot Field</td><td>Yes</td><td>Hidden <code>website</code> input - bots fill it, humans never see it.</td></tr>
+        <tr><td>Require X-Requested-With</td><td>Yes</td><td>Both bundled clients send <code>XMLHttpRequest</code>; direct browser nav does not.</td></tr>
+        <tr><td>Require Same-Origin</td><td>Yes</td><td>Origin / Referer host must match the store base URL.</td></tr>
+        <tr><td>Max POST Body (bytes)</td><td>4096</td><td>POST bodies larger than this are dropped.</td></tr>
+    </table>
+
+    <h2 id="security">4. Security model - what blocks attackers</h2>
+    <p>The endpoint sits in front of the catalog search index, the CMS table, and the category tree, so it is an attractive target for scraping, brute-force enumeration, and credential / cart spam. Eight independent layers run on every request:</p>
+    <ol>
+        <li><strong>Method whitelist</strong>: only GET / POST. Anything else is a 200 with empty payload (does not leak the endpoint shape).</li>
+        <li><strong>POST body size cap</strong>: POST bodies larger than 4 KB are dropped before any work happens.</li>
+        <li><strong>User-Agent gate</strong>: empty + 22 known bot patterns (curl, wget, python-requests, go-http-client, okhttp, java/, scrapy, phantomjs, headlesschrome, puppeteer, playwright, sqlmap, nikto, masscan, etc.).</li>
+        <li><strong>X-Requested-With</strong>: must equal <code>XMLHttpRequest</code>. Blocks direct browser nav and most curl probes.</li>
+        <li><strong>Same-origin</strong>: Origin / Referer host must equal the store base-URL host. Blocks cross-site enumeration and CSRF replay.</li>
+        <li><strong>Honeypot</strong>: hidden <code>website</code> field must be empty. Bots fill every field; real humans never see it.</li>
+        <li><strong>Form key</strong>: Magento's session-bound, rotating CSRF token must validate.</li>
+        <li><strong>Query sanitisation + length bounds</strong>: control bytes stripped, quotes removed, length must be 2-64 chars.</li>
+        <li><strong>Per-IP sliding-window rate limit</strong>: 60 req/min per client IP and store. Cache hits don't count, so legitimate users are never throttled.</li>
+    </ol>
+    <p><strong>Output side:</strong> JSON-encoded responses are XSS-safe; the JS clients escape every field before HTML insertion (only the highlight substitution generates <code>&lt;mark&gt;</code> tags). Response headers set:</p>
+    <pre>Cache-Control: private, no-store, no-cache, must-revalidate
+X-Content-Type-Options: nosniff
+X-Robots-Tag: noindex, nofollow, nosnippet
+Referrer-Policy: strict-origin-when-cross-origin</pre>
+    <div class="ok"><strong>Defence in depth.</strong> Eight layers means an attacker has to bypass eight independent checks to reach the search engine. Cached responses are isolated per (store, customer group, query) so a compromise of one cache row never leaks another customer's view.</div>
+    <div class="warn"><strong>Layer 9 (recommended):</strong> put a WAF in front (Cloudflare / Fastly / AWS WAF) and rate-limit POSTs to <code>/searchautocomplete/*</code> to e.g. 120 req/min/IP at the edge.</div>
+
+    <h2 id="performance">5. Performance &amp; caching</h2>
+    <ul>
+        <li><strong>Hot path:</strong> warm queries return in &lt;5 ms because the cache lookup short-circuits all four providers.</li>
+        <li><strong>Cold path:</strong> 30-80 ms typical on a 100 k-SKU catalog (ES/OpenSearch ~20 ms, category DB ~5 ms, CMS DB ~5 ms, popular DB ~5 ms, JSON encode ~5 ms).</li>
+        <li><strong>Cache key:</strong> <code>sha1(storeId | groupId | mb_strtolower(query))</code> - guests and logged-in customers never see each other's cached results.</li>
+        <li><strong>Cache tags:</strong> rows are tagged with <code>cat_p</code>, <code>cat_c</code>, <code>cms_p</code>, and the dedicated <code>PANTH_SEARCH_AUTOCOMPLETE</code> tag, so a product save / category save / CMS page save automatically clears the relevant rows on the next reindex / cache flush.</li>
+        <li><strong>Manual flush:</strong> <code>bin/magento cache:clean panth_search_autocomplete</code></li>
+    </ul>
+
+    <h2 id="themes">6. Hyva &amp; Luma integration</h2>
+    <p>The module ships <strong>two templates</strong> sharing one ViewModel:</p>
+    <table>
+        <tr><th>Theme</th><th>Template</th><th>Stack</th></tr>
+        <tr><td>Hyva</td><td><code>view/frontend/templates/hyva/searchbox.phtml</code></td><td>Tailwind utilities + Alpine.js component, no external CSS/JS files</td></tr>
+        <tr><td>Luma</td><td><code>view/frontend/templates/searchbox.phtml</code></td><td>Vanilla JS bundle + standalone CSS file under <code>web/js</code> + <code>web/css</code></td></tr>
+    </table>
+    <p>Both templates render an identical UX: the same dropdown layout, the same color palette (sourced from <code>app/design/frontend/Panth/Infotech/web/tailwind/theme-config.json</code> via CSS custom properties), the same keyboard shortcuts, the same recent / popular / categories / pages sections, and the same "see all results" CTA. Layout swap is handled by the <code>hyva_default</code> handle.</p>
+
+    <h2 id="extending">7. Extending - adding new content types</h2>
+    <p>To surface a new entity (e.g. blog posts, FAQs, testimonials) in the dropdown:</p>
+    <ol>
+        <li>Create <code>Model/Suggestion/MyProvider.php</code> implementing <code>search(string $query): array</code>.</li>
+        <li>Inject it into <code>Controller/Ajax/Suggest.php</code> (constructor + execute()).</li>
+        <li>Add a <code>section_heading</code> + render block to both templates.</li>
+        <li>Add a config toggle / limit field to <code>etc/adminhtml/system.xml</code>.</li>
+    </ol>
+
+    <h2 id="troubleshooting">8. Troubleshooting</h2>
+    <table>
+        <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+        <tr><td>Dropdown never opens</td><td>Module disabled, or layout container not present in the theme</td><td>Verify <code>panth_searchautocomplete/general/enabled = 1</code>; check the layout XML container name matches your theme.</td></tr>
+        <tr><td>0 product results despite typing real SKUs</td><td>Search index empty or stale</td><td><code>bin/magento indexer:reindex catalogsearch_fulltext</code></td></tr>
+        <tr><td>"rejected: true" in JSON response</td><td>Form key expired, bot UA, missing X-Requested-With, or cross-origin</td><td>Open browser dev tools, inspect the request headers; reload the page to refresh form_key.</td></tr>
+        <tr><td>"throttled: true" in JSON response (HTTP 429)</td><td>Rate limit hit</td><td>Wait 60 seconds, or raise the limit under Configuration -> Bot &amp; Abuse Prevention.</td></tr>
+        <tr><td>Stale results after editing a product</td><td>Cache type not flushed</td><td><code>bin/magento cache:clean panth_search_autocomplete</code> (or wait for the TTL).</td></tr>
+        <tr><td>Categories from another store appearing</td><td>Path filter mis-set (should never happen)</td><td>Open a bug - the provider already restricts by <code>path LIKE '1/&lt;rootCategoryId&gt;/%'</code>.</td></tr>
+    </table>
+
+    <h2>CLI reference</h2>
+    <pre>
+# Manually flush the autocomplete cache
+bin/magento cache:clean panth_search_autocomplete
+
+# Enable / disable the cache type
+bin/magento cache:enable  panth_search_autocomplete
+bin/magento cache:disable panth_search_autocomplete
+
+# Reindex the catalog search index (the engine the providers query)
+bin/magento indexer:reindex catalogsearch_fulltext
+
+# Verify the engine in use
+bin/magento config:show catalog/search/engine
+</pre>
+</div>

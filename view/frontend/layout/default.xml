@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+    Default frontend layout - replaces the native Luma "top.search" block
+    with the Panth Autocomplete search box. When the module is disabled
+    the native mini search form is rendered instead.
+
+    Luma uses container "header.panel" -> block "top.search" by default.
+    Hyva uses block "header-search" inside "header-content" - that swap
+    happens in hyva_default.xml which fires only on Hyva-themed pages.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="top.search" template="Panth_SearchAutocomplete::native-search.phtml">
+            <arguments>
+                <argument name="panth_search_box" xsi:type="object">Panth\SearchAutocomplete\ViewModel\SearchBox</argument>
+            </arguments>
+        </referenceBlock>
+        <referenceContainer name="header.panel">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="panth.searchautocomplete.luma"
+                   template="Panth_SearchAutocomplete::searchbox.phtml"
+                   before="-">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Panth\SearchAutocomplete\ViewModel\SearchBox</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

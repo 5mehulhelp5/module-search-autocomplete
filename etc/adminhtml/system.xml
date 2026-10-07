@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="panth" translate="label" sortOrder="200">
+            <label>Panth Extensions</label>
+        </tab>
+        <section id="panth_searchautocomplete" translate="label" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Search Autocomplete</label>
+            <tab>panth</tab>
+            <resource>Panth_SearchAutocomplete::config</resource>
+
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="min_query_length" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum Query Length</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 2. Queries shorter than this never hit the backend.</comment>
+                </field>
+                <field id="max_query_length" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Maximum Query Length</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 64. Hard cap to prevent CPU DoS via huge queries.</comment>
+                </field>
+                <field id="debounce_ms" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Input Debounce (ms)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 200. Lower = more requests, higher = laggier UX.</comment>
+                </field>
+            </group>
+
+            <group id="results" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Result Sections</label>
+                <field id="products_limit" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max Products</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+                <field id="categories_limit" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max Categories</label>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="pages_limit" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max CMS Pages</label>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="popular_limit" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max Popular Searches</label>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="show_image" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Product Images</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_price" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Product Prices</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_categories" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Categories Section</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_pages" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show CMS Pages Section</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="show_popular" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Popular Searches Section</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="record_keystroke_popularity" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Count Typed Queries as Searches</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When Yes, every uncached suggestion request is written to Magento's search terms (search_query) and raises its popularity, so anyone can push junk terms into Popular Searches. When No, only searches submitted to the search results page are counted by Magento. Default: No.</comment>
+                </field>
+            </group>
+
+            <group id="cache" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Caching</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Result Cache</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="ttl_seconds" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cache TTL (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 300. Auto-invalidated when products / categories / CMS pages change.</comment>
+                </field>
+            </group>
+
+            <group id="security" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Bot &amp; Abuse Prevention</label>
+                <field id="require_form_key" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Require Form Key</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Rejects requests without a valid Magento form_key - defeats simple bots.</comment>
+                </field>
+                <field id="rate_limit_per_minute" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Rate Limit (req / min / IP)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 60, minimum 10. Counted per client IP and store view; the client IP comes from Magento's RemoteAddress service. Cache-served responses also count.</comment>
+                </field>
+                <field id="block_empty_ua" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Block Empty User-Agent</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="block_bot_ua" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Block Bot User-Agent Patterns</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Blocks curl, wget, python-requests, scrapy, headlesschrome, phantomjs, etc.</comment>
+                </field>
+                <field id="honeypot_enabled" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Honeypot Field</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="require_ajax_header" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Require X-Requested-With Header</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Rejects direct browser navigation to the JSON endpoint. Both bundled clients (Hyva + Luma) send this header automatically.</comment>
+                </field>
+                <field id="require_same_origin" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Require Same-Origin Request</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Validates the Origin / Referer header against the store base URL. Blocks cross-site enumeration.</comment>
+                </field>
+                <field id="max_body_bytes" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max POST Body (bytes)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 4096. Hard cap on POST body size - autocomplete payloads are tiny.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

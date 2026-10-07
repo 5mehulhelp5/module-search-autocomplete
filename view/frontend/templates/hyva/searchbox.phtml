@@ -1,0 +1,93 @@
+<?php
+/**
+ * Panth Search Autocomplete - Hyva template.
+ *
+ * Hyva's parent template (vendor/hyva-themes/magento2-default-theme/
+ * Magento_Theme/templates/html/header.phtml) already wraps the
+ * `header-search` child block in:
+ *
+ *     <div id="search-content" x-show="searchOpen">
+ *         <?= $block->getChildHtml('header-search'); ?>
+ *     </div>
+ *
+ * That parent provides the click-to-open / Escape-to-close overlay UX
+ * via Alpine. Our template just needs to render the form + dropdown
+ * INSIDE that overlay - no trigger, no overlay container, no Alpine
+ * state of our own (which avoided console errors from prior versions
+ * that registered `Alpine.data` with timing-sensitive init flows).
+ *
+ * The actual autocomplete behaviour (debounced fetch, popular, recent,
+ * categories, CMS pages, highlighted matches, keyboard nav, security
+ * headers) lives entirely in the shared vanilla-JS bundle
+ * `view/frontend/web/js/autocomplete.js`. Same code path as Luma.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$vm = $block->getData('view_model');
+if (!$vm || !$vm->isEnabled()):
+    ?><?= /* @noEscape */ $block->fetchView($block->getTemplateFile('Magento_Theme::html/header/search-form.phtml')) ?><?php
+    return;
+endif;
+$jsConfig = $vm->jsConfig();
+?>
+<link rel="stylesheet" href="<?= $escaper->escapeUrl($block->getViewFileUrl('Panth_SearchAutocomplete::css/autocomplete.css')) ?>"/>
+
+<!--
+    Wrap everything in the same `container py-2 mx-auto text-black` shell
+    that the native Hyva search-form.phtml uses. The Tailwind `container`
+    utility centers the content with the project's configured max-width,
+    so the search input matches the rest of the Hyva header content area
+    instead of stretching edge-to-edge across the popup overlay.
+
+    Defence-in-depth visibility:
+      - The PARENT `<div id="search-content">` already has
+        `x-show="searchOpen" x-cloak` from Hyva's header.phtml.
+      - WE ALSO add `x-show="searchOpen" x-cloak` here so even if the
+        parent's binding is somehow lost, our element stays hidden.
+      - Inline `style="display:none"` is the FOUC-proof initial state:
+        Alpine removes it on init when searchOpen flips to true.
+-->
+<div class="container py-3 mx-auto text-black"
+     x-show="searchOpen"
+     x-cloak
+     @search-open.window.debounce.10="$nextTick(() => { const i = $el.querySelector('[data-psac-input]'); if (searchOpen && i) { i.focus(); } })"
+     style="display:none">
+    <div class="psac-wrap psac-hyva-wrap"
+         id="panth-search-autocomplete-hyva"
+         data-psac-config='<?= /* @noEscape */ $jsConfig ?>'>
+    <form role="search" method="GET"
+          action="<?= $escaper->escapeUrl($vm->getViewAllSearchUrl()) ?>"
+          class="psac-form" data-psac-form>
+        <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($vm->getFormKey()) ?>"/>
+        <label class="psac-honeypot" aria-hidden="true">
+            <input type="text" name="<?= $escaper->escapeHtmlAttr($vm->getHoneypotName()) ?>" tabindex="-1" autocomplete="off" value=""/>
+        </label>
+        <input type="search"
+               name="q"
+               class="psac-input"
+               data-psac-input
+               maxlength="<?= (int) $vm->getMaxQueryLength() ?>"
+               value="<?= $escaper->escapeHtmlAttr($vm->getCurrentQuery()) ?>"
+               autocomplete="off"
+               spellcheck="false"
+               aria-label="<?= $escaper->escapeHtmlAttr(__('Search the store')) ?>"
+               placeholder="<?= $escaper->escapeHtmlAttr(__('Search for products, categories, brands...')) ?>"/>
+        <svg class="psac-icon-search" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"/>
+        </svg>
+        <button type="button" class="psac-clear" data-psac-clear hidden aria-label="<?= $escaper->escapeHtmlAttr(__('Clear')) ?>">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <button type="submit" class="psac-submit" aria-label="<?= $escaper->escapeHtmlAttr(__('Search')) ?>">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"/></svg>
+            <?= $escaper->escapeHtml(__('Search')) ?>
+        </button>
+        <div class="psac-loading" data-psac-loading hidden></div>
+    </form>
+    <div class="psac-dropdown" data-psac-dropdown hidden role="listbox"></div>
+    </div><!-- /.psac-wrap -->
+</div><!-- /.container -->
+
+
+<script src="<?= $escaper->escapeUrl($block->getViewFileUrl('Panth_SearchAutocomplete::js/autocomplete.js')) ?>" defer></script>

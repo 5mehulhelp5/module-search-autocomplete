@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!--
+    Bind the dedicated autocomplete cache type to the standard cache
+    frontend pool so cache:flush panth_search_autocomplete works.
+    -->
+    <type name="Magento\Framework\App\Cache\Type\FrontendPool">
+        <arguments>
+            <argument name="typeFrontendMap" xsi:type="array">
+                <item name="panth_search_autocomplete" xsi:type="string">default</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Panth\SearchAutocomplete\Model\Suggestion\ProductProvider">
+        <arguments>
+            <argument name="searchCollectionFactory" xsi:type="object">Magento\CatalogSearch\Model\ResourceModel\Fulltext\SearchCollectionFactory</argument>
+        </arguments>
+    </type>
+
+</config>
